@@ -64,9 +64,14 @@ function App() {
             className="form-control"
             value={bits}
             min={1}
-            max={16}
-            onChange={(e) => setBits(+e.target.value)}
+            max={32}
+            onChange={(e) => {
+              const raw = e.target.value;
+              const sanitized = Math.max(1, Math.min(32, parseInt(raw.replace(/^0+/, ""), 10) || 1));
+              setBits(sanitized);
+            }}
           />
+
         </div>
 
         {/* Frecuencia */}
@@ -158,6 +163,14 @@ function App() {
 
       {/* Resultado */}
       <div className="mt-4 text-center">
+        {rate < 2 * freq && (
+          <div className="alert alert-danger mt-3" role="alert">
+            ⚠ <strong>ALERTA DE ALIASING:</strong> la frecuencia de muestreo ({rate} Hz) es menor al doble de la frecuencia de la señal ({freq} Hz).<br />
+            La señal digitalizada puede presentar aliasing y no representar fielmente la original.<br />
+            <strong>Recomendación:</strong> usá una tasa de muestreo mayor o igual a {2 * freq} Hz.
+          </div>
+        )}
+
         {loading ? (
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Cargando...</span>
@@ -166,6 +179,7 @@ function App() {
           imgSrc && <img src={imgSrc} alt="Resultado" className="img-fluid mt-2" />
         )}
       </div>
+
     </div>
   );
 }

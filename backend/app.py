@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from signal_utils import generate_signal
 import io
+import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 CORS(app)
@@ -19,6 +20,7 @@ def simulate():
     fig = generate_signal(signal_type, freq, amp, sample_rate, bits)
     buf = io.BytesIO()
     fig.savefig(buf, format='png')
+    plt.close(fig)
     buf.seek(0)
     return send_file(buf, mimetype='image/png')
 
